@@ -8,7 +8,7 @@ Tracks all planned improvements. Each milestone is checked off in the same commi
 
 ## Milestones
 
-- [ ] **M1** — Service Architecture Refactor (`feature/service-architecture`)
+- [x] **M1** — Service Architecture Refactor (`feature/service-architecture`)
   - Extract `CoffeeShop` PORO from `CsvFetcher` struct
   - Split `CsvParser` out of `CsvFetcher` as dedicated service
   - Add `CoffeeShopFinder` orchestrator

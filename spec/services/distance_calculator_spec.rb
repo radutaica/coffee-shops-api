@@ -23,10 +23,10 @@ RSpec.describe DistanceCalculator do
   describe ".closest" do
     let(:shops) do
       [
-        CsvFetcher::CoffeeShop.new(1, "Far",    100.0, 100.0),
-        CsvFetcher::CoffeeShop.new(2, "Close",  1.0,   1.0),
-        CsvFetcher::CoffeeShop.new(3, "Medium", 10.0,  10.0),
-        CsvFetcher::CoffeeShop.new(4, "Closer", 2.0,   2.0),
+        CoffeeShop.new(id: 1, name: "Far",    x: 100.0, y: 100.0),
+        CoffeeShop.new(id: 2, name: "Close",  x: 1.0,   y: 1.0),
+        CoffeeShop.new(id: 3, name: "Medium", x: 10.0,  y: 10.0),
+        CoffeeShop.new(id: 4, name: "Closer", x: 2.0,   y: 2.0),
       ]
     end
 
@@ -52,7 +52,7 @@ RSpec.describe DistanceCalculator do
     end
 
     it "assigns distance 0.0 to a shop at the user's exact location" do
-      shops_with_exact = [CsvFetcher::CoffeeShop.new(1, "Here", 5.0, 5.0)]
+      shops_with_exact = [CoffeeShop.new(id: 1, name: "Here", x: 5.0, y: 5.0)]
       result = DistanceCalculator.closest(shops_with_exact, 5.0, 5.0, limit: 3)
       expect(result.first.distance).to eq(0.0)
     end
