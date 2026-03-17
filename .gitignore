@@ -1,0 +1,23 @@
+.DS_Store
+CLAUDE.md
+*.docx
+
+# Ignore key files for decrypting credentials and more.
+/config/*.key
+
+# Rails defaults
+/log/*
+!/log/.keep
+/tmp/
+/storage/
+/public/assets
+.byebug_history
+.env
+*.bak
+
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Test coverage
+/coverage/
