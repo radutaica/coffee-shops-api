@@ -48,5 +48,32 @@ RSpec.describe CsvParser do
       shops = CsvParser.parse(csv)
       expect(shops.map(&:id)).to eq([1, 3])
     end
+
+    it "strips whitespace from name, x, and y values" do
+      csv = "  Starbucks  , 47.5809 , 122.4177 \n"
+      shops = CsvParser.parse(csv)
+      expect(shops.first.name).to eq("Starbucks")
+      expect(shops.first.x).to eq(47.5809)
+      expect(shops.first.y).to eq(122.4177)
+    end
+
+    it "skips the header row when present" do
+      csv = "Name,X,Y\nStarbucks,47.5809,122.4177\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.size).to eq(1)
+      expect(shops.first.name).to eq("Starbucks")
+    end
+
+    it "logs a warning for each skipped malformed row" do
+      allow(Rails.logger).to receive(:warn)
+      CsvParser.parse(csv_body)
+      expect(Rails.logger).to have_received(:warn).twice
+    end
+
+    it "logs a warning when a row has fewer than 3 columns" do
+      allow(Rails.logger).to receive(:warn)
+      CsvParser.parse("Good,1.0,2.0\nToo Short\n")
+      expect(Rails.logger).to have_received(:warn).once
+    end
   end
 end
