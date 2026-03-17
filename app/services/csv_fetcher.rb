@@ -6,10 +6,12 @@ class CsvFetcher
   FetchError = Class.new(StandardError)
 
   def self.fetch
-    response = HTTParty.get(CSV_URL, timeout: 5)
-    raise FetchError, "HTTP #{response.code}" unless response.success?
+    Rails.cache.fetch("coffee_shops_csv", expires_in: 1.hour) do
+      response = HTTParty.get(CSV_URL, timeout: 5)
+      raise FetchError, "HTTP #{response.code}" unless response.success?
 
-    response.body
+      response.body
+    end
   rescue HTTParty::Error, SocketError, Timeout::Error => e
     raise FetchError, e.message
   end
