@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe CsvFetcher do
   let(:csv_body) do
     <<~CSV
-      Name,X,Y
       Starbucks Seattle,47.5809,122.4177
       Starbucks SF,37.5841,122.4011
       Bad Row,,
@@ -26,6 +25,23 @@ RSpec.describe CsvFetcher do
       shops = CsvFetcher.parse(csv_body)
       expect(shops.map(&:id)).to eq([1, 2])
     end
+
+    it "skips rows with fewer than 3 columns" do
+      short_row_csv = "Good Shop,1.0,2.0\nToo Short\n"
+      shops = CsvFetcher.parse(short_row_csv)
+      expect(shops.size).to eq(1)
+      expect(shops.first.name).to eq("Good Shop")
+    end
+
+    it "returns empty array for empty CSV" do
+      shops = CsvFetcher.parse("")
+      expect(shops).to eq([])
+    end
+
+    it "ids are non-contiguous when rows are skipped" do
+      shops = CsvFetcher.parse(csv_body)
+      expect(shops.map(&:id)).to eq([1, 2])
+    end
   end
 
   describe ".fetch" do
@@ -34,6 +50,16 @@ RSpec.describe CsvFetcher do
       shops = CsvFetcher.fetch
       expect(shops.size).to eq(2)
       expect(shops.first.name).to eq("Starbucks Seattle")
+    end
+
+    it "raises FetchError on SocketError" do
+      stub_request(:get, CsvFetcher::CSV_URL).to_raise(SocketError)
+      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError)
+    end
+
+    it "raises FetchError on HTTP 500" do
+      stub_request(:get, CsvFetcher::CSV_URL).to_return(status: 500, body: "Internal Server Error")
+      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 500")
     end
   end
 end
