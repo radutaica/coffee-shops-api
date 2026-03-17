@@ -25,5 +25,12 @@ RSpec.describe CsvFetcher do
       stub_request(:get, CsvFetcher::CSV_URL).to_return(status: 500, body: "Internal Server Error")
       expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 500")
     end
+
+    it "does not make a second HTTP request when cache is warm" do
+      stub = stub_request(:get, CsvFetcher::CSV_URL).to_return(body: csv_body)
+      CsvFetcher.fetch
+      CsvFetcher.fetch
+      expect(stub).to have_been_requested.once
+    end
   end
 end
