@@ -1,7 +1,7 @@
 require "httparty"
 
 class CsvFetcher
-  CSV_URL = "https://raw.githubusercontent.com/Agilefreaks/test_oop/master/coffee_shops.csv"
+  CSV_URL = ENV.fetch("COFFEE_SHOPS_CSV_URL", "https://raw.githubusercontent.com/Agilefreaks/test_oop/master/coffee_shops.csv")
 
   FetchError = Class.new(StandardError)
 
