@@ -11,9 +11,8 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        shops = CsvFetcher.fetch
-        closest = DistanceCalculator.closest(shops, x, y, limit: 3)
-        render json: CoffeeShopSerializer.new(closest).serializable_hash
+        finder = CoffeeShopFinder.new(x: x, y: y)
+        render json: CoffeeShopSerializer.new(finder.call).serializable_hash
       rescue CsvFetcher::FetchError
         render json: {
           errors: [{ status: "503", title: "Service Unavailable", detail: "Unable to fetch coffee shop data" }]
