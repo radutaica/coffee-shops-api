@@ -13,6 +13,16 @@ RSpec.describe "GET /api/v1/coffee_shops", type: :request do
     stub_request(:get, CsvFetcher::CSV_URL).to_return(body: csv_body)
   end
 
+  it "sets Content-Type to application/vnd.api+json" do
+    get "/api/v1/coffee_shops", params: { x: 47.6, y: -122.4 }
+    expect(response.content_type).to include("application/vnd.api+json")
+  end
+
+  it "sets Content-Type to application/vnd.api+json on error responses" do
+    get "/api/v1/coffee_shops", params: { x: "bad", y: -122.4 }
+    expect(response.content_type).to include("application/vnd.api+json")
+  end
+
   context "with valid coordinates" do
     it "returns 3 closest shops sorted closest to farthest" do
       get "/api/v1/coffee_shops", params: { x: 47.6, y: -122.4 }
