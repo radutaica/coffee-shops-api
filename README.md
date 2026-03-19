@@ -168,3 +168,5 @@ bundle exec rubocop -a  # auto-correct safe offenses
 - **Malformed row handling** — CSV rows with missing or non-numeric coordinates are silently skipped with a log warning. No error is raised to the caller.
 - **Network resilience** — `CsvFetcher` has a 5-second timeout and raises a typed `FetchError` on failure, mapped to a 503. No retry logic is implemented.
 - **No pagination** — the endpoint always returns exactly 3 results. Pagination would be needed if requirements changed.
+- **Duplicate query params** — Rails takes the last value when a param appears multiple times (e.g. `x=47.6&x=50.0` uses `50.0`). We accept this default rather than rejecting ambiguous input, since the challenge spec assumes well-formed requests.
+- **Performance at scale** — the current approach iterates all rows and sorts to find the 3 closest, which is O(n log n). This is fine for the ~100-row CSV in the challenge. At 100k+ rows, we'd consider a spatial index (k-d tree, R-tree) or a database with PostGIS to avoid a full scan on every request.

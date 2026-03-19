@@ -8,7 +8,7 @@ class DistanceCalculator
   def self.closest(shops, x, y, limit: 3)
     shops
       .map { |shop| [ shop, distance(x, y, shop.x, shop.y) ] }
-      .sort_by { |_, dist| dist }
+      .sort_by { |shop, dist| [ dist, shop.name ] }
       .first(limit)
       .map { |shop, dist| Result.new(shop.id, shop.name, shop.x, shop.y, dist) }
   end

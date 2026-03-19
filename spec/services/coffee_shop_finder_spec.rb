@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe CoffeeShopFinder do
   let(:csv_body) do
     <<~CSV
-      Starbucks Seattle2,47.5788,122.3974
-      Starbucks Seattle,47.5869,122.4236
-      Starbucks SF,37.5841,122.4011
+      Starbucks Seattle2,47.5869,-122.3368
+      Starbucks Seattle,47.5809,-122.3160
+      Starbucks SF,37.5209,-122.3340
     CSV
   end
 

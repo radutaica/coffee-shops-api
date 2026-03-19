@@ -75,5 +75,44 @@ RSpec.describe CsvParser do
       CsvParser.parse("Good,1.0,2.0\nToo Short\n")
       expect(Rails.logger).to have_received(:warn).once
     end
+
+    it "skips rows with malformed quoting instead of crashing" do
+      csv = "Good Shop,1.0,2.0\nCafé \"The Best\",40.758,-73.9855\nAnother Good,3.0,4.0\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.map(&:name)).to include("Good Shop", "Another Good")
+    end
+
+    it "logs a warning for rows with malformed quoting" do
+      allow(Rails.logger).to receive(:warn)
+      csv = "Good,1.0,2.0\nCafé \"The Best\",40.758,-73.9855\n"
+      CsvParser.parse(csv)
+      expect(Rails.logger).to have_received(:warn).at_least(:once)
+    end
+
+    it "skips rows with blank or missing name" do
+      csv = ",47.5809,-122.3160\n  ,37.5841,-122.4011\nValid Shop,1.0,2.0\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.size).to eq(1)
+      expect(shops.first.name).to eq("Valid Shop")
+    end
+
+    it "handles Windows-style CRLF line endings" do
+      csv = "Shop A,1.0,2.0\r\nShop B,3.0,4.0\r\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.map(&:name)).to eq(["Shop A", "Shop B"])
+    end
+
+    it "handles mixed line endings" do
+      csv = "Shop A,1.0,2.0\r\nShop B,3.0,4.0\nShop C,5.0,6.0\r\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.map(&:name)).to eq(["Shop A", "Shop B", "Shop C"])
+    end
+
+    it "parses rows with a trailing comma" do
+      csv = "Starbucks,47.5809,-122.316,\n"
+      shops = CsvParser.parse(csv)
+      expect(shops.size).to eq(1)
+      expect(shops.first.name).to eq("Starbucks")
+    end
   end
 end

@@ -32,5 +32,15 @@ RSpec.describe CsvFetcher do
       CsvFetcher.fetch
       expect(stub).to have_been_requested.once
     end
+
+    it "raises FetchError on Timeout::Error" do
+      stub_request(:get, CsvFetcher::CSV_URL).to_raise(Timeout::Error)
+      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError)
+    end
+
+    it "raises FetchError when CSV URL returns HTML 404 page" do
+      stub_request(:get, CsvFetcher::CSV_URL).to_return(status: 404, body: "<html><body>Not Found</body></html>")
+      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 404")
+    end
   end
 end
