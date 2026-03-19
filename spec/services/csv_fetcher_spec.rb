@@ -11,36 +11,36 @@ RSpec.describe CsvFetcher do
   describe ".fetch" do
     it "fetches the remote CSV body" do
       stub_request(:get, CsvFetcher::CSV_URL).to_return(body: csv_body)
-      result = CsvFetcher.fetch
+      result = described_class.fetch
       expect(result).to be_a(String)
       expect(result).to include("Starbucks Seattle")
     end
 
     it "raises FetchError on SocketError" do
       stub_request(:get, CsvFetcher::CSV_URL).to_raise(SocketError)
-      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError)
+      expect { described_class.fetch }.to raise_error(CsvFetcher::FetchError)
     end
 
     it "raises FetchError on HTTP 500" do
       stub_request(:get, CsvFetcher::CSV_URL).to_return(status: 500, body: "Internal Server Error")
-      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 500")
+      expect { described_class.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 500")
     end
 
     it "does not make a second HTTP request when cache is warm" do
       stub = stub_request(:get, CsvFetcher::CSV_URL).to_return(body: csv_body)
-      CsvFetcher.fetch
-      CsvFetcher.fetch
+      described_class.fetch
+      described_class.fetch
       expect(stub).to have_been_requested.once
     end
 
     it "raises FetchError on Timeout::Error" do
       stub_request(:get, CsvFetcher::CSV_URL).to_raise(Timeout::Error)
-      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError)
+      expect { described_class.fetch }.to raise_error(CsvFetcher::FetchError)
     end
 
     it "raises FetchError when CSV URL returns HTML 404 page" do
       stub_request(:get, CsvFetcher::CSV_URL).to_return(status: 404, body: "<html><body>Not Found</body></html>")
-      expect { CsvFetcher.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 404")
+      expect { described_class.fetch }.to raise_error(CsvFetcher::FetchError, "HTTP 404")
     end
   end
 end
