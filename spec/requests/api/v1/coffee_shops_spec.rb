@@ -30,7 +30,7 @@ RSpec.describe "GET /api/v1/coffee_shops", type: :request do
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
       names = json["data"].map { |d| d["attributes"]["name"] }
-      expect(names).to eq(["Starbucks Seattle2", "Starbucks Seattle", "Starbucks SF"])
+      expect(names).to eq([ "Starbucks Seattle2", "Starbucks Seattle", "Starbucks SF" ])
     end
 
     it "returns JSON API format" do
