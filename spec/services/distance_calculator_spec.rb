@@ -56,5 +56,30 @@ RSpec.describe DistanceCalculator do
       result = DistanceCalculator.closest(shops_with_exact, 5.0, 5.0, limit: 3)
       expect(result.first.distance).to eq(0.0)
     end
+
+    it "breaks distance ties by name ascending" do
+      equidistant_shops = [
+        CoffeeShop.new(id: 1, name: "Gamma", x: 1.0, y: 0.0),
+        CoffeeShop.new(id: 2, name: "Alpha", x: -1.0, y: 0.0),
+        CoffeeShop.new(id: 3, name: "Beta",  x: 0.0, y: 1.0),
+      ]
+      result = DistanceCalculator.closest(equidistant_shops, 0, 0, limit: 3)
+      expect(result.map(&:distance).uniq.size).to eq(1)
+      expect(result.map(&:name)).to eq(["Alpha", "Beta", "Gamma"])
+    end
+  end
+
+  describe ".distance rounding precision" do
+    it "returns exactly 4 decimal places, not 3" do
+      result = DistanceCalculator.distance(0, 0, 1.23456, 0)
+      expect(result).to eq(1.2346)
+      expect(result).not_to eq(1.235)
+    end
+
+    it "returns exactly 4 decimal places, not 5" do
+      result = DistanceCalculator.distance(0, 0, 1.23456, 0)
+      expect(result).to eq(1.2346)
+      expect(result).not_to eq(1.23456)
+    end
   end
 end
