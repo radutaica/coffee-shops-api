@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:80"
+    volumes:
+      - ./config/master.key:/rails/config/master.key:ro
+    environment:
+      COFFEE_SHOPS_CSV_URL: ${COFFEE_SHOPS_CSV_URL:-}
