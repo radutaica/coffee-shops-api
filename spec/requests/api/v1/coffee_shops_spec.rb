@@ -149,8 +149,36 @@ RSpec.describe "GET /api/v1/coffee_shops", type: :request do
       get "/api/v1/coffee_shops", params: { x: "bad", y: -122.4 }
 
       json = JSON.parse(response.body)
-      expect(json["errors"].first).to include("status", "title")
+      expect(json["errors"].first).to include("status", "title", "detail")
       expect(json["errors"].first["status"]).to eq("422")
+    end
+
+    it "returns per-field error for invalid x" do
+      get "/api/v1/coffee_shops", params: { x: "bad", y: -122.4 }
+
+      json = JSON.parse(response.body)
+      expect(json["errors"].size).to eq(1)
+      expect(json["errors"].first["detail"]).to include("x")
+    end
+
+    it "returns per-field error for invalid y" do
+      get "/api/v1/coffee_shops", params: { x: 47.6, y: "bad" }
+
+      json = JSON.parse(response.body)
+      expect(json["errors"].size).to eq(1)
+      expect(json["errors"].first["detail"]).to include("y")
+    end
+
+    it "returns errors for both x and y when both are invalid" do
+      get "/api/v1/coffee_shops", params: { x: "bad", y: "bad" }
+
+      json = JSON.parse(response.body)
+      expect(json["errors"].size).to eq(2)
+    end
+
+    it "returns 422 for Infinity via extreme exponent" do
+      get "/api/v1/coffee_shops", params: { x: "1e999", y: -122.4 }
+      expect(response).to have_http_status(:unprocessable_entity)
     end
   end
 

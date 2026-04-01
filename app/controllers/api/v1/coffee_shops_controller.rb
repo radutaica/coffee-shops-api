@@ -2,16 +2,12 @@ module Api
   module V1
     class CoffeeShopsController < ApplicationController
       def index
-        x = parse_float(params[:x])
-        y = parse_float(params[:y])
-
-        if x.nil? || y.nil?
-          return render json: {
-            errors: [ { status: "422", title: "Invalid Parameters", detail: "x and y must be valid numbers" } ]
-          }, status: :unprocessable_entity
+        errors = validate_coordinates
+        if errors.any?
+          return render json: { errors: errors }, status: :unprocessable_entity
         end
 
-        finder = CoffeeShopFinder.new(x: x, y: y)
+        finder = CoffeeShopFinder.new(x: @x, y: @y)
         render json: CoffeeShopSerializer.new(finder.call).serializable_hash
       rescue CsvFetcher::FetchError
         render json: {
@@ -21,10 +17,16 @@ module Api
 
       private
 
-      def parse_float(value)
-        Float(value)
-      rescue ArgumentError, TypeError
-        nil
+      def validate_coordinates
+        errors = []
+
+        @x = CoordinateParser.parse(params[:x])
+        errors << { status: "422", title: "Invalid Parameter", detail: "x is required and must be a valid number" } if @x.nil?
+
+        @y = CoordinateParser.parse(params[:y])
+        errors << { status: "422", title: "Invalid Parameter", detail: "y is required and must be a valid number" } if @y.nil?
+
+        errors
       end
     end
   end

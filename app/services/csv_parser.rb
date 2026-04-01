@@ -19,8 +19,8 @@ class CsvParser
       end
 
       name = row[0]&.strip
-      x = Float(row[1]&.strip) rescue nil
-      y = Float(row[2]&.strip) rescue nil
+      x = CoordinateParser.parse(row[1]&.strip)
+      y = CoordinateParser.parse(row[2]&.strip)
 
       if name.nil? || name.empty? || x.nil? || y.nil?
         Rails.logger.warn "Skipping malformed CSV row #{idx}: #{row.inspect}"
