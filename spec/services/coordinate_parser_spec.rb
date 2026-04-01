@@ -31,7 +31,7 @@ RSpec.describe CoordinateParser do
     end
 
     it "returns nil for array injection" do
-      expect(described_class.parse(["1"])).to be_nil
+      expect(described_class.parse([ "1" ])).to be_nil
     end
 
     it "parses a valid float value" do
