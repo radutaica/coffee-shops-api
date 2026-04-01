@@ -12,30 +12,30 @@ RSpec.describe DistanceCalculator do
 
   describe "#call" do
     it "returns the 3 closest shops sorted by distance" do
-      result = described_class.new(shops: shops, x: 0, y: 0).call(limit: 3)
+      result = described_class.new(shops: shops, x: 0, y: 0).call
       expect(result.map(&:name)).to eq([ "Close", "Closer", "Medium" ])
     end
 
     it "attaches distance to each result" do
-      result = described_class.new(shops: shops, x: 0, y: 0).call(limit: 3)
+      result = described_class.new(shops: shops, x: 0, y: 0).call
       expected = Math.sqrt(1.0**2 + 1.0**2).round(4)
       expect(result.first.distance).to eq(expected)
     end
 
     it "returns all shops when fewer than limit exist" do
       two_shops = shops.first(2)
-      result = described_class.new(shops: two_shops, x: 0, y: 0).call(limit: 3)
+      result = described_class.new(shops: two_shops, x: 0, y: 0).call
       expect(result.size).to eq(2)
     end
 
     it "returns empty array when shops list is empty" do
-      result = described_class.new(shops: [], x: 0, y: 0).call(limit: 3)
+      result = described_class.new(shops: [], x: 0, y: 0).call
       expect(result).to eq([])
     end
 
     it "assigns distance 0.0 to a shop at the user's exact location" do
       shops_with_exact = [ CoffeeShop.new(id: 1, name: "Here", x: 5.0, y: 5.0) ]
-      result = described_class.new(shops: shops_with_exact, x: 5.0, y: 5.0).call(limit: 3)
+      result = described_class.new(shops: shops_with_exact, x: 5.0, y: 5.0).call
       expect(result.first.distance).to eq(0.0)
     end
 
@@ -45,7 +45,7 @@ RSpec.describe DistanceCalculator do
         CoffeeShop.new(id: 2, name: "Alpha", x: -1.0, y: 0.0),
         CoffeeShop.new(id: 3, name: "Beta",  x: 0.0, y: 1.0)
       ]
-      result = described_class.new(shops: equidistant_shops, x: 0, y: 0).call(limit: 3)
+      result = described_class.new(shops: equidistant_shops, x: 0, y: 0).call
       expect(result.map(&:distance).uniq.size).to eq(1)
       expect(result.map(&:name)).to eq([ "Alpha", "Beta", "Gamma" ])
     end
