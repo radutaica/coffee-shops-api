@@ -1,8 +1,12 @@
 require "csv"
 
 class CsvParser
-  def self.parse(csv_body)
-    csv_body.lines.filter_map.with_index(1) do |line, idx|
+  def initialize(csv_body)
+    @csv_body = csv_body
+  end
+
+  def call
+    @csv_body.lines.filter_map.with_index(1) do |line, idx|
       row = parse_line(line, idx)
       next unless row
 
@@ -10,7 +14,9 @@ class CsvParser
     end
   end
 
-  def self.parse_line(line, idx)
+  private
+
+  def parse_line(line, idx)
     row = CSV.parse_line(line)
     return nil if row.nil? || row.compact.empty?
 
@@ -25,7 +31,7 @@ class CsvParser
     nil
   end
 
-  def self.build_shop(row, idx)
+  def build_shop(row, idx)
     name = row[0]&.strip
     x = CoordinateParser.parse(row[1]&.strip)
     y = CoordinateParser.parse(row[2]&.strip)
@@ -37,6 +43,4 @@ class CsvParser
 
     CoffeeShop.new(id: idx, name: name, x: x, y: y)
   end
-
-  private_class_method :parse_line, :build_shop
 end

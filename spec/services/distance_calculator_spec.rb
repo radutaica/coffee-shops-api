@@ -1,59 +1,41 @@
 require "rails_helper"
 
 RSpec.describe DistanceCalculator do
-  describe ".distance" do
-    it "calculates Euclidean distance rounded to 4 decimal places" do
-      expect(described_class.distance(0, 0, 3, 4)).to eq(5.0)
-    end
-
-    it "rounds to 4 decimal places" do
-      result = described_class.distance(47.6, -122.4, 47.5809, -122.4177)
-      expect(result).to eq(result.round(4))
-    end
-
-    it "returns 0.0 when coordinates are identical" do
-      expect(described_class.distance(1.5, 2.5, 1.5, 2.5)).to eq(0.0)
-    end
-
-    it "works with negative coordinates" do
-      expect(described_class.distance(0, 0, -3, -4)).to eq(5.0)
-    end
+  let(:shops) do
+    [
+      CoffeeShop.new(id: 1, name: "Far",    x: 100.0, y: 100.0),
+      CoffeeShop.new(id: 2, name: "Close",  x: 1.0,   y: 1.0),
+      CoffeeShop.new(id: 3, name: "Medium", x: 10.0,  y: 10.0),
+      CoffeeShop.new(id: 4, name: "Closer", x: 2.0,   y: 2.0)
+    ]
   end
 
-  describe ".closest" do
-    let(:shops) do
-      [
-        CoffeeShop.new(id: 1, name: "Far",    x: 100.0, y: 100.0),
-        CoffeeShop.new(id: 2, name: "Close",  x: 1.0,   y: 1.0),
-        CoffeeShop.new(id: 3, name: "Medium", x: 10.0,  y: 10.0),
-        CoffeeShop.new(id: 4, name: "Closer", x: 2.0,   y: 2.0)
-      ]
-    end
-
+  describe "#call" do
     it "returns the 3 closest shops sorted by distance" do
-      result = described_class.closest(shops, 0, 0, limit: 3)
+      result = described_class.new(shops: shops, x: 0, y: 0).call(limit: 3)
       expect(result.map(&:name)).to eq([ "Close", "Closer", "Medium" ])
     end
 
     it "attaches distance to each result" do
-      result = described_class.closest(shops, 0, 0, limit: 3)
-      expect(result.first.distance).to eq(described_class.distance(0, 0, 1.0, 1.0))
+      result = described_class.new(shops: shops, x: 0, y: 0).call(limit: 3)
+      expected = Math.sqrt(1.0**2 + 1.0**2).round(4)
+      expect(result.first.distance).to eq(expected)
     end
 
     it "returns all shops when fewer than limit exist" do
       two_shops = shops.first(2)
-      result = described_class.closest(two_shops, 0, 0, limit: 3)
+      result = described_class.new(shops: two_shops, x: 0, y: 0).call(limit: 3)
       expect(result.size).to eq(2)
     end
 
     it "returns empty array when shops list is empty" do
-      result = described_class.closest([], 0, 0, limit: 3)
+      result = described_class.new(shops: [], x: 0, y: 0).call(limit: 3)
       expect(result).to eq([])
     end
 
     it "assigns distance 0.0 to a shop at the user's exact location" do
       shops_with_exact = [ CoffeeShop.new(id: 1, name: "Here", x: 5.0, y: 5.0) ]
-      result = described_class.closest(shops_with_exact, 5.0, 5.0, limit: 3)
+      result = described_class.new(shops: shops_with_exact, x: 5.0, y: 5.0).call(limit: 3)
       expect(result.first.distance).to eq(0.0)
     end
 
@@ -63,23 +45,41 @@ RSpec.describe DistanceCalculator do
         CoffeeShop.new(id: 2, name: "Alpha", x: -1.0, y: 0.0),
         CoffeeShop.new(id: 3, name: "Beta",  x: 0.0, y: 1.0)
       ]
-      result = described_class.closest(equidistant_shops, 0, 0, limit: 3)
+      result = described_class.new(shops: equidistant_shops, x: 0, y: 0).call(limit: 3)
       expect(result.map(&:distance).uniq.size).to eq(1)
       expect(result.map(&:name)).to eq([ "Alpha", "Beta", "Gamma" ])
     end
-  end
 
-  describe ".distance rounding precision" do
+    it "calculates Euclidean distance rounded to 4 decimal places" do
+      shop = [ CoffeeShop.new(id: 1, name: "Test", x: 3.0, y: 4.0) ]
+      result = described_class.new(shops: shop, x: 0, y: 0).call
+      expect(result.first.distance).to eq(5.0)
+    end
+
+    it "rounds to 4 decimal places" do
+      shop = [ CoffeeShop.new(id: 1, name: "Test", x: 47.5809, y: -122.4177) ]
+      result = described_class.new(shops: shop, x: 47.6, y: -122.4).call
+      expect(result.first.distance).to eq(result.first.distance.round(4))
+    end
+
     it "returns exactly 4 decimal places, not 3" do
-      result = described_class.distance(0, 0, 1.23456, 0)
-      expect(result).to eq(1.2346)
-      expect(result).not_to eq(1.235)
+      shop = [ CoffeeShop.new(id: 1, name: "Test", x: 1.23456, y: 0.0) ]
+      result = described_class.new(shops: shop, x: 0, y: 0).call
+      expect(result.first.distance).to eq(1.2346)
+      expect(result.first.distance).not_to eq(1.235)
     end
 
     it "returns exactly 4 decimal places, not 5" do
-      result = described_class.distance(0, 0, 1.23456, 0)
-      expect(result).to eq(1.2346)
-      expect(result).not_to eq(1.23456)
+      shop = [ CoffeeShop.new(id: 1, name: "Test", x: 1.23456, y: 0.0) ]
+      result = described_class.new(shops: shop, x: 0, y: 0).call
+      expect(result.first.distance).to eq(1.2346)
+      expect(result.first.distance).not_to eq(1.23456)
+    end
+
+    it "works with negative coordinates" do
+      shop = [ CoffeeShop.new(id: 1, name: "Test", x: -3.0, y: -4.0) ]
+      result = described_class.new(shops: shop, x: 0, y: 0).call
+      expect(result.first.distance).to eq(5.0)
     end
   end
 end

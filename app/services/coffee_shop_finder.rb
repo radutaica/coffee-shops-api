@@ -5,8 +5,8 @@ class CoffeeShopFinder
   end
 
   def call
-    csv_body = CsvFetcher.fetch
-    shops = CsvParser.parse(csv_body)
-    DistanceCalculator.closest(shops, @x, @y, limit: 3)
+    csv_body = CsvFetcher.new.call
+    shops = CsvParser.new(csv_body).call
+    DistanceCalculator.new(shops: shops, x: @x, y: @y).call
   end
 end

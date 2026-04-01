@@ -1,15 +1,23 @@
 class DistanceCalculator
   Result = Struct.new(:id, :name, :x, :y, :distance)
 
-  def self.distance(x1, y1, x2, y2)
-    Math.sqrt((x2 - x1)**2 + (y2 - y1)**2).round(4)
+  def initialize(shops:, x:, y:)
+    @shops = shops
+    @x = x
+    @y = y
   end
 
-  def self.closest(shops, x, y, limit: 3)
-    shops
-      .map { |shop| [ shop, distance(x, y, shop.x, shop.y) ] }
+  def call(limit: 3)
+    @shops
+      .map { |shop| [ shop, calculate_distance(shop) ] }
       .sort_by { |shop, dist| [ dist, shop.name ] }
       .first(limit)
       .map { |shop, dist| Result.new(shop.id, shop.name, shop.x, shop.y, dist) }
+  end
+
+  private
+
+  def calculate_distance(shop)
+    Math.sqrt((shop.x - @x)**2 + (shop.y - @y)**2).round(4)
   end
 end
