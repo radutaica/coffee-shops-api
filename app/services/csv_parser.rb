@@ -41,6 +41,6 @@ class CsvParser
       return nil
     end
 
-    CoffeeShop.new(id: idx, name: name, x: x, y: y)
+    { name: name, x: x, y: y }
   end
 end
