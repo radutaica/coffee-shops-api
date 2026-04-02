@@ -13,12 +13,12 @@ class DistanceCalculator
       .map { |shop| [ shop, calculate_distance(shop) ] }
       .sort_by { |shop, dist| [ dist, shop.name ] }
       .first(@limit)
-      .map { |shop, dist| Result.new(shop.id, shop.name, shop.x, shop.y, dist) }
+      .map { |shop, dist| Result.new(shop.id, shop.name, shop.x_coordinate, shop.y_coordinate, dist) }
   end
 
   private
 
   def calculate_distance(shop)
-    Math.sqrt((shop.x - @x)**2 + (shop.y - @y)**2).round(4)
+    Math.sqrt((shop.x_coordinate - @x)**2 + (shop.y_coordinate - @y)**2).round(4)
   end
 end

@@ -1,15 +1,14 @@
 class CoffeeShopFinder
-  DEFAULT_LIMIT = 3
 
-  def initialize(x:, y:, limit: DEFAULT_LIMIT)
+  def initialize(x:, y:, shops:)
     @x = x
     @y = y
-    @limit = limit
+    @shops = shops
   end
 
   def call
     csv_body = CsvFetcher.new.call
-    shops = CsvParser.new(csv_body).call
-    DistanceCalculator.new(shops: shops, x: @x, y: @y, limit: @limit).call
+    shops = @shops
+    DistanceCalculator.new(shops: shops, x: @x, y: @y).call
   end
 end
