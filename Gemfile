@@ -54,3 +54,5 @@ group :development, :test do
   gem "simplecov", require: false
   gem "rubocop-rspec", require: false
 end
+
+gem "graphql", "~> 2.5"
