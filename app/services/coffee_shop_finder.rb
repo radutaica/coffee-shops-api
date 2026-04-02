@@ -1,5 +1,4 @@
 class CoffeeShopFinder
-
   def initialize(x:, y:, shops:)
     @x = x
     @y = y

@@ -2,8 +2,8 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :coffee_shops, [Types::CoffeeShop], null: false do 
-      argument :y, Float, required: true 
+    field :coffee_shops, [ Types::CoffeeShop ], null: false do
+      argument :y, Float, required: true
       argument :x, Float, required: true
     end
 

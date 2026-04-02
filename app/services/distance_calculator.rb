@@ -1,15 +1,14 @@
 class DistanceCalculator
-
   def initialize(shops:, x:, y:)
     @shops = shops
     @x = x
     @y = y
   end
 
-  def call                                                                                                                                                                     
+  def call
     @shops.each { |shop| shop.distance = calculate_distance(shop) }
-    @shops.sort_by { |shop| [shop.distance, shop.name] }
-  end  
+    @shops.sort_by { |shop| [ shop.distance, shop.name ] }
+  end
 
   private
 
