@@ -1,1 +1,4 @@
-CoffeeShop = Data.define(:id, :name, :x, :y)
+class CoffeeShop < ApplicationRecord
+    
+    attr_accessor :distance, :highlighted
+end
