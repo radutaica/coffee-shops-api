@@ -1,0 +1,39 @@
+type CoffeeShop {
+  id: ID!
+  name: String!
+  address: String!
+  openingTime: String!
+  closingTime: String!
+  x: Float!
+  y: Float!
+  distance: Float
+  highlighted: Boolean!
+}
+
+type Query {
+  "Returns coffee shops ordered by proximity to the given coordinates"
+  coffeeShops(x: Float!, y: Float!, name: String): [CoffeeShop!]!
+}
+
+type Mutation {
+  createCoffeeShop(
+    name: String!
+    address: String!
+    openingTime: String!
+    closingTime: String!
+    x: Float!
+    y: Float!
+  ): CoffeeShop!
+
+  updateCoffeeShop(
+    id: ID!
+    name: String
+    address: String
+    openingTime: String
+    closingTime: String
+    x: Float
+    y: Float
+  ): CoffeeShop!
+
+  deleteCoffeeShop(id: ID!): CoffeeShop!
+}
