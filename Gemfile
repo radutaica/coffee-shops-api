@@ -20,8 +20,6 @@ gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
 
-gem "pry"
-
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -51,6 +49,7 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+  gem "pry"
   gem "rspec-rails"
   gem "webmock"
   gem "simplecov", require: false
