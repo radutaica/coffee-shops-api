@@ -7,7 +7,9 @@ class DistanceCalculator
 
   def call
     @shops.each { |shop| shop.distance = calculate_distance(shop) }
-    @shops.sort_by { |shop| [ shop.distance, shop.name ] }
+    sorted = @shops.sort_by { |shop| [ shop.distance, shop.name ] }
+    sorted.each_with_index { |shop, i| shop.highlighted = i < 3 }
+    sorted
   end
 
   private
