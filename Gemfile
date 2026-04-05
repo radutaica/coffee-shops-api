@@ -49,8 +49,11 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+  gem "pry"
   gem "rspec-rails"
   gem "webmock"
   gem "simplecov", require: false
   gem "rubocop-rspec", require: false
 end
+
+gem "graphql", "~> 2.5"

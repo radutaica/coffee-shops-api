@@ -10,5 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 0) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_02_110529) do
+  create_table "coffee_shops", force: :cascade do |t|
+    t.string "address", null: false
+    t.string "closing_time", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "opening_time", null: false
+    t.datetime "updated_at", null: false
+    t.float "x_coordinate", null: false
+    t.float "y_coordinate", null: false
+  end
 end

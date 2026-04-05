@@ -1,24 +1,20 @@
 class DistanceCalculator
-  Result = Struct.new(:id, :name, :x, :y, :distance)
-
-  def initialize(shops:, x:, y:, limit: 3)
+  def initialize(shops:, x:, y:)
     @shops = shops
     @x = x
     @y = y
-    @limit = limit
   end
 
   def call
-    @shops
-      .map { |shop| [ shop, calculate_distance(shop) ] }
-      .sort_by { |shop, dist| [ dist, shop.name ] }
-      .first(@limit)
-      .map { |shop, dist| Result.new(shop.id, shop.name, shop.x, shop.y, dist) }
+    @shops.each { |shop| shop.distance = calculate_distance(shop) }
+    sorted = @shops.sort_by { |shop| [ shop.distance, shop.name ] }
+    sorted.each_with_index { |shop, i| shop.highlighted = i < 3 }
+    sorted
   end
 
   private
 
   def calculate_distance(shop)
-    Math.sqrt((shop.x - @x)**2 + (shop.y - @y)**2).round(4)
+    Math.sqrt((shop.x_coordinate - @x)**2 + (shop.y_coordinate - @y)**2).round(4)
   end
 end
