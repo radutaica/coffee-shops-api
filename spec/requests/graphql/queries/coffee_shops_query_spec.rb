@@ -18,6 +18,21 @@
         GQL
       end
 
+      context "authentication" do
+        it "allows queries without an Authorization header" do
+          CoffeeShop.create!(name: "Open Shop", x_coordinate: 1.0, y_coordinate: 1.0, address: "1 Ave", opening_time: "06:00", closing_time: "22:00")
+
+          post "/graphql",
+              params: { query: query, variables: { x: 0.0, y: 0.0 } }.to_json,
+              headers: { "Content-Type" => "application/json" }
+
+          json = JSON.parse(response.body)
+          expect(response).to have_http_status(:ok)
+          expect(json["errors"]).to be_nil
+          expect(json["data"]["coffeeShops"].length).to eq(1)
+        end
+      end
+
       context "when only required parameters are provided" do
         it "returns shops sorted by distance" do
           CoffeeShop.create!(name: "Near Shop", x_coordinate: 1.0, y_coordinate: 1.0, address: "100 Coffee Ave", opening_time: "06:00", closing_time: "22:00")

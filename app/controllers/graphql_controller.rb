@@ -11,8 +11,7 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      authenticated: valid_api_key?
     }
     result = CoffeeShopsApiSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -22,6 +21,17 @@ class GraphqlController < ApplicationController
   end
 
   private
+
+  def valid_api_key?
+    header = request.headers["Authorization"]
+    return false unless header.present?
+
+    token = header.sub(/\ABearer\s+/, "")
+    stored_key = Rails.application.credentials.dig(:graphql, :api_key) || ENV["GRAPHQL_API_KEY"]
+    return false unless stored_key.present?
+
+    ActiveSupport::SecurityUtils.secure_compare(token, stored_key)
+  end
 
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)

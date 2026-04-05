@@ -6,5 +6,13 @@ module Mutations
     field_class Types::BaseField
     input_object_class Types::BaseInputObject
     object_class Types::BaseObject
+
+    def authorized?(**args)
+      unless context[:authenticated]
+        raise GraphQL::ExecutionError, "Authentication required. Provide a valid API key via Authorization: Bearer <key> header."
+      end
+
+      super
+    end
   end
 end
