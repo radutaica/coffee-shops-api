@@ -35,7 +35,7 @@ RSpec.describe "createCoffeeShop mutation", type: :request do
     expect {
       post "/graphql",
         params: { query: query, variables: variables }.to_json,
-        headers: { "Content-Type" => "application/json" }
+        headers: graphql_headers
     }.to change(CoffeeShop, :count).by(1)
 
     json = JSON.parse(response.body)
@@ -59,7 +59,7 @@ RSpec.describe "createCoffeeShop mutation", type: :request do
 
     post "/graphql",
       params: { query: query, variables: variables }.to_json,
-      headers: { "Content-Type" => "application/json" }
+      headers: graphql_headers
 
     json = JSON.parse(response.body)
     expect(json["errors"]).to be_present
@@ -79,7 +79,7 @@ RSpec.describe "createCoffeeShop mutation", type: :request do
     expect {
       post "/graphql",
         params: { query: query, variables: variables }.to_json,
-        headers: { "Content-Type" => "application/json" }
+        headers: graphql_headers
     }.not_to change(CoffeeShop, :count)
   end
 end

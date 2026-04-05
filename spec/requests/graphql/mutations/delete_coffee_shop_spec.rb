@@ -36,7 +36,7 @@ RSpec.describe "deleteCoffeeShop mutation", type: :request do
     expect {
       post "/graphql",
         params: { query: query, variables: variables }.to_json,
-        headers: { "Content-Type" => "application/json" }
+        headers: graphql_headers
     }.to change(CoffeeShop, :count).by(-1)
 
     json = JSON.parse(response.body)
@@ -55,7 +55,7 @@ RSpec.describe "deleteCoffeeShop mutation", type: :request do
 
     post "/graphql",
       params: { query: query, variables: variables }.to_json,
-      headers: { "Content-Type" => "application/json" }
+      headers: graphql_headers
 
     json = JSON.parse(response.body)
     data = json["data"]["deleteCoffeeShop"]
@@ -69,11 +69,11 @@ RSpec.describe "deleteCoffeeShop mutation", type: :request do
 
     post "/graphql",
       params: { query: query, variables: variables }.to_json,
-      headers: { "Content-Type" => "application/json" }
+      headers: graphql_headers
 
     post "/graphql",
       params: { query: query, variables: variables }.to_json,
-      headers: { "Content-Type" => "application/json" }
+      headers: graphql_headers
 
     json = JSON.parse(response.body)
     data = json["data"]["deleteCoffeeShop"]
