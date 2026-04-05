@@ -62,6 +62,33 @@
         end
       end
 
+      context "highlighted field" do
+        it "marks the first 3 closest shops as highlighted" do
+          CoffeeShop.create!(name: "A", x_coordinate: 1.0, y_coordinate: 1.0, address: "1 Ave", opening_time: "06:00", closing_time: "22:00")
+          CoffeeShop.create!(name: "B", x_coordinate: 2.0, y_coordinate: 2.0, address: "2 Ave", opening_time: "06:00", closing_time: "22:00")
+          CoffeeShop.create!(name: "C", x_coordinate: 3.0, y_coordinate: 3.0, address: "3 Ave", opening_time: "06:00", closing_time: "22:00")
+          CoffeeShop.create!(name: "D", x_coordinate: 50.0, y_coordinate: 50.0, address: "4 Ave", opening_time: "06:00", closing_time: "22:00")
+
+          highlighted_query = <<~GQL
+            query($x: Float!, $y: Float!) {
+              coffeeShops(x: $x, y: $y) {
+                name
+                highlighted
+              }
+            }
+          GQL
+
+          post "/graphql",
+              params: { query: highlighted_query, variables: { x: 0.0, y: 0.0 } }.to_json,
+              headers: { "Content-Type" => "application/json" }
+
+          shops = JSON.parse(response.body)["data"]["coffeeShops"]
+
+          expect(shops[0..2].map { |s| s["highlighted"] }).to all(be true)
+          expect(shops[3]["highlighted"]).to be false
+        end
+      end
+
       context "when name optional parameter is provided" do
         it "returns closest shops near me based on name search filter" do
           CoffeeShop.create!(name: "Near", x_coordinate: 1.0, y_coordinate: 1.0, address: "100 Coffee Ave", opening_time: "06:00", closing_time: "22:00")

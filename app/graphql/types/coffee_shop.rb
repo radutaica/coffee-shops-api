@@ -7,6 +7,7 @@ class Types::CoffeeShop < GraphQL::Schema::Object
   field :x, Float, null: false
   field :y, Float, null: false
   field :distance, Float, null: false
+  field :highlighted, Boolean, null: false
 
   def x
     object.x_coordinate
